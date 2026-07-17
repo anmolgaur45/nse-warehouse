@@ -12,10 +12,18 @@ calendar as (
 
 ),
 
+security_dim as (
+
+    select *
+    from {{ ref('dim_security') }}
+
+),
+
 final as (
 
     select
         p.TckrSymb as security_symbol,
+        sd.security_key,
         c.full_date as date_key,
 
         p.OpnPric as open_price,
@@ -35,6 +43,9 @@ final as (
     from prices p
     left join calendar c
         on p.trade_date = c.full_date
+    left join security_dim sd
+        on p.TckrSymb = sd.security_symbol
+        and p.trade_date between sd.valid_from and coalesce(sd.valid_to, cast('2099-12-31' as datetime))
 
 )
 
