@@ -1,0 +1,36 @@
+version: 2
+
+models:
+  - name: dim_date
+    columns:
+      - name: full_date
+        data_tests:
+          - not_null
+          - unique
+
+  - name: dim_security
+    columns:
+      - name: security_key
+        data_tests:
+          - not_null
+          - unique
+
+      - name: security_symbol
+        data_tests:
+          - not_null
+
+  - name: fct_daily_prices
+    columns:
+      - name: security_key
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_security')
+                field: security_key
+
+      - name: date_key
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: full_date
