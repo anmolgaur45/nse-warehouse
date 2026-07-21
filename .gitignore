@@ -1,2 +1,11 @@
 logs/
-nse_warehouse_dbt/logs/logs/
+nse_warehouse_dbt/logs/
+__pycache__/
+*.py[cod]
+.venv/
+.env
+target/
+dbt_packages/
+data/
+*-key.json
+service-account*.json

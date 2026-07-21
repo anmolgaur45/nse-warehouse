@@ -10,6 +10,30 @@ PROJECT_ID = "nse-warehouse"
 RAW_DATASET = "raw"
 RAW_TABLE = "equity_bhavcopy"
 
+LEGACY_COLUMN_MAP = {
+    'SYMBOL': 'TckrSymb',
+    'SERIES': 'SctySrs',
+    'OPEN': 'OpnPric',
+    'CLOSE': 'ClsPric',
+    'HIGH': 'HghPric',
+    'LOW': 'LwPric',
+    'TOTTRDQTY': 'TtlTradgVol',
+    'TOTTRDVAL': 'TtlTrfVal',
+    'TOTALTRADES': 'TtlNbOfTxsExctd',
+    'LAST': 'LastPric',
+    'PREVCLOSE': 'PrvsClsgPric'
+}
+ 
+ 
+def is_legacy_format(df: pd.DataFrame) -> bool:
+    return 'SYMBOL' in df.columns
+ 
+ 
+def normalize_legacy_format(df: pd.DataFrame) -> pd.DataFrame:
+    df = df.rename(columns=LEGACY_COLUMN_MAP).drop(columns=['TIMESTAMP', 'Unnamed: 13'], errors='ignore')
+    df['FinInstrmNm'] = df['TckrSymb'].copy()
+    df['name_is_placeholder'] = True
+    return df
 
 @retry(stop = stop_after_attempt(5), wait = wait_exponential(multiplier=1, min=4, max=10), retry = retry_if_not_exception_type(RuntimeError))
 
@@ -17,6 +41,10 @@ def fetch_bhavcopy_for_date(nse_client, trade_date: datetime) -> pd.DataFrame:
   
     result = nse_client.equityBhavcopy(date=trade_date)
     df = pd.read_csv(result)
+    if is_legacy_format(df):
+        df = normalize_legacy_format(df)
+    else:
+        df['name_is_placeholder'] = False
     return df
     
 
@@ -32,7 +60,11 @@ def load_to_bigquery(df: pd.DataFrame, table_id: str) -> None:
     
     client = bigquery.Client()
 
-    job_config = bigquery.LoadJobConfig(autodetect=True, write_disposition='WRITE_APPEND')
+    job_config = bigquery.LoadJobConfig(
+        autodetect=True, 
+        write_disposition='WRITE_APPEND',
+        schema_update_options=[bigquery.SchemaUpdateOption.ALLOW_FIELD_ADDITION]
+    )
 
     job = client.load_table_from_dataframe(df, table_id, job_config=job_config)
 
@@ -83,8 +115,8 @@ def ingest_date_range(start: datetime, end: datetime, nse_client: NSE) -> None:
 
 if __name__ == "__main__":
 
-    start_date = datetime(2026, 6, 6)
-    end_date = datetime(2026, 6, 30)
+    start_date = datetime(2023, 1, 1)
+    end_date = datetime(2026, 5, 31)
 
     with NSE(download_folder="/tmp/nse_downloads") as nse_client:
         ingest_date_range(start_date, end_date, nse_client)
