@@ -4,7 +4,8 @@ with security_days as (
         TckrSymb,
         trade_date,
         FinInstrmNm,
-        ISIN
+        ISIN,
+        name_is_placeholder
     from {{ ref('stg_equity_prices') }}
 
 ),
@@ -61,6 +62,7 @@ collapsed as (
         version_num,
         ANY_VALUE(FinInstrmNm) as security_name,
         ANY_VALUE(ISIN) as isin,
+        ANY_VALUE(name_is_placeholder) as name_is_placeholder,
 
         min(trade_date) as valid_from,
         max(trade_date) as valid_to
@@ -102,5 +104,6 @@ select
     security_name,
     isin,
     valid_from,
-    corrected_valid_to as valid_to
+    corrected_valid_to as valid_to,
+    name_is_placeholder
 from with_end_dates

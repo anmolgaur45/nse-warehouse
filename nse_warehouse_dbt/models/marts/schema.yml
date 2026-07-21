@@ -2,35 +2,91 @@ version: 2
 
 models:
   - name: dim_date
+    description: Calendar dimension, 2022-2028. Generated via dbt_utils.date_spine, no dependency on ingested data. No is_trading_day column on purpose -- join to fct_daily_prices for that.
     columns:
       - name: full_date
+        description: One row per calendar day.
         data_tests:
           - not_null
           - unique
+      - name: day_of_week_num
+        description: 1-7, BigQuery DAYOFWEEK convention (1=Sunday, 7=Saturday).
+      - name: day_of_week
+        description: Weekday name.
+      - name: day_of_month
+        description: 1-31.
+      - name: month_num
+        description: 1-12.
+      - name: month_name
+        description: Month name.
+      - name: quarter
+        description: 1-4.
+      - name: year
+        description: Calendar year.
+      - name: is_weekend
+        description: True for Sat/Sun. Not the same as "not a trading day" -- NSE holidays are weekdays too.
 
   - name: dim_security
+    description: SCD2 security dimension. One row per version of a security (a name or ISIN change starts a new version). Derived with LAG over stg_equity_prices, not a dbt snapshot. Name tracking only reliable from 2024-07-08 (NSE's UDiFF rollout) -- earlier rows use the ticker as a placeholder name. Large cluster of version starts on 2024-07-08 -- this is placeholder to real name transition when format changed
     columns:
       - name: security_key
+        description: Surrogate key, unique per (symbol, version).
         data_tests:
           - not_null
           - unique
-
       - name: security_symbol
+        description: Ticker symbol. Not unique -- one symbol can have several version rows.
         data_tests:
           - not_null
+      - name: security_name
+        description: Company name for this version. Placeholder (equals symbol) before 2024-07-08.
+      - name: isin
+        description: ISIN for this version. Present in both bhavcopy formats.
+      - name: valid_from
+        description: First trading date this version was active.
+      - name: valid_to
+        description: Last trading date this version was active. NULL means current version.
 
   - name: fct_daily_prices
+    description: One row per security per trading day, same grain as stg_equity_prices. Left joined to both dims so a bad join shows up as NULL instead of dropping the row.
     columns:
+      - name: security_symbol
+        description: Ticker symbol, kept directly on the fact table.
       - name: security_key
+        description: FK to dim_security. Temporal join -- trade_date within the matching version's valid_from/valid_to.
         data_tests:
           - relationships:
               arguments:
                 to: ref('dim_security')
                 field: security_key
-
       - name: date_key
+        description: FK to dim_date.
         data_tests:
           - relationships:
               arguments:
                 to: ref('dim_date')
                 field: full_date
+      - name: open_price
+        description: Opening price.
+      - name: high_price
+        description: High price.
+      - name: low_price
+        description: Low price.
+      - name: close_price
+        description: Closing price.
+      - name: total_volume
+        description: Shares traded.
+      - name: total_turnover
+        description: Value traded, in rupees.
+      - name: total_trades
+        description: Number of trades executed.
+      - name: is_weekend
+        description: Carried from dim_date.
+      - name: day_of_week
+        description: Carried from dim_date.
+      - name: month_name
+        description: Carried from dim_date.
+      - name: quarter
+        description: Carried from dim_date.
+      - name: year
+        description: Carried from dim_date.
