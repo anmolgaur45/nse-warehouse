@@ -12,6 +12,9 @@ PROJECT_ID = os.environ["PROJECT_ID"]
 RAW_DATASET = os.environ["RAW_DATASET"]
 RAW_TABLE = "equity_bhavcopy"
 
+SCHEMA_PATH = "schemas/equity_bhavcopy.json"
+STAGING_EXPIRY_HOURS = 72
+
 LEGACY_COLUMN_MAP = {
     'SYMBOL': 'TckrSymb',
     'SERIES': 'SctySrs',
