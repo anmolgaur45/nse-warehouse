@@ -1,0 +1,122 @@
+[
+  {
+    "mode": "REQUIRED",
+    "name": "TckrSymb",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "SctySrs",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "OpnPric",
+    "type": "FLOAT"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "HghPric",
+    "type": "FLOAT"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "LwPric",
+    "type": "FLOAT"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "ClsPric",
+    "type": "FLOAT"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "LastPric",
+    "type": "FLOAT"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "PrvsClsgPric",
+    "type": "FLOAT"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "TtlTradgVol",
+    "type": "INTEGER"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "TtlTrfVal",
+    "type": "FLOAT"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "TtlNbOfTxsExctd",
+    "type": "INTEGER"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "ISIN",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "FinInstrmNm",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "name_is_placeholder",
+    "type": "BOOLEAN"
+  },
+  {
+    "mode": "REQUIRED",
+    "name": "ingestion_timestamp",
+    "type": "TIMESTAMP"
+  },
+  {
+    "mode": "REQUIRED",
+    "name": "trade_date",
+    "type": "DATE"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "TradDt",
+    "type": "DATE"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "Sgmt",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "Src",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "FinInstrmTp",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "FinInstrmId",
+    "type": "INTEGER"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "SttlmPric",
+    "type": "FLOAT"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "SsnId",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "NewBrdLotQty",
+    "type": "INTEGER"
+  }
+]
